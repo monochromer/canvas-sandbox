@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #canvas {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            width: 300px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script src="../painter.js"></script>
+    <script>
+        var elem = document.getElementById('canvas');
+        var painter = Painter(elem);
+        var w = painter.getWidth();
+        var h = painter.getHeight();
+
+        painter.fn(function(ctx) {
+            ctx.fillStyle = '#39f';
+            ctx.fillRect(0, 0, w, h);
+
+            var sg = ctx.createLinearGradient(0, h, w, 0);
+            sg.addColorStop(0, 'rgba(255, 255, 255, 1');
+            sg.addColorStop(1, 'rgba(255, 255, 255, 0');
+            ctx.fillStyle = sg;
+            ctx.fillRect(0, 0, w, h);
+
+            var vg = ctx.createLinearGradient(0, 0, 0, h);
+            vg.addColorStop(0, 'rgba(0, 0, 0, 0');
+            vg.addColorStop(1, 'rgba(0, 0, 0, 1');
+            ctx.fillStyle = vg;
+            ctx.fillRect(0, 0, w, h);
+        });
+    </script>
+</body>
+</html>

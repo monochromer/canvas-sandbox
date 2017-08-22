@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #canvas {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            width: 300px;
+            height: 200px;
+            box-shadow: 0 0 0 1px #ccc;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script src="../painter.js"></script>
+    <script>
+        function render(ctx) {
+            ctx.beginPath();
+            var w = ctx.canvas.width / devicePixelRatio;
+            var h = ctx.canvas.height / devicePixelRatio;
+            ctx.arc(
+                Math.random() * w,
+                Math.random() * h,
+                Math.random() * Math.max(w, h),
+                0, 2 * Math.PI,
+                false
+            );
+            ctx.fillStyle = getRndColor();
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function getRndColor() {
+            var r = 255*Math.random()|0,
+                g = 255*Math.random()|0,
+                b = 255*Math.random()|0;
+            return 'rgb(' + r + ',' + g + ',' + b + ')';
+        }
+
+        var elem = document.getElementById('canvas');
+        var painter = Painter(elem);
+        painter
+            // .polyline([[0, 0], [50, 50], [50, 100], [70, 70], [300, 200]])
+            .loop(render)
+            .fn(() => setTimeout(painter.stop, 5000))
+    </script>
+</body>
+</html>

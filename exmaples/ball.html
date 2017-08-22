@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #canvas {
+            position: absolute;
+            top   : 0;
+            bottom: 0;
+            left  : 0;
+            right : 0;
+            margin: auto;
+            width: calc(100% - 20px);
+            height: calc(100% - 20px);
+            box-shadow: 0 0 0 1px #ccc;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script src="../painter.js"></script>
+    <script>
+        var elem = document.getElementById('canvas');
+        var painter = Painter(elem);
+        var w = painter.getWidth();
+        var h = painter.getHeight();
+
+        var ball;
+        function Ball(ctx, options) {
+            this.x = options.x;
+            this.y = options.y;
+            this.r = options.r;
+            this.color = options.color;
+            this.v = options.v;
+            this.friction = options.friction;
+            this.gravity = options.gravity;
+
+            this.draw = function() {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            this.update = function() {
+                var signY = (this.y + this.r + this.v.y) > h || (this.y - this.r + this.v.y) < 0 ? -1 : 1;
+                var signX = (this.x + this.r + this.v.x) > w || (this.x - this.r + this.v.x) < 0 ? -1 : 1;
+
+                this.v.x = this.v.x * signX * this.friction;
+                this.v.y = this.v.y * signY * this.friction;
+
+                this.x += this.v.x;
+                this.y += this.v.y - this.gravity;
+                this.draw();
+            }
+        }
+
+        painter
+            .fn(function(ctx) {
+                ball = new Ball(ctx, {
+                    x: w / 2,
+                    y: h / 2,
+                    r: 20,
+                    color: '#39f',
+                    v: {
+                        x: 10,
+                        y: 10
+                    },
+                    friction: 1,
+                    gravity: 0.2
+                })
+            })
+            .loop(function(ctx) {
+                ball.update();
+            })
+    </script>
+</body>
+</html>
