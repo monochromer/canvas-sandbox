@@ -40,13 +40,18 @@
         var isLoop = false;
 
         var dpx = getDevicePixelRatio();
-        var w = canvas.clientWidth;
-        var h = canvas.clientHeight;
-        canvas.width = w * dpx;
-        canvas.height = h * dpx;
-        ctx.scale(dpx, dpx);
 
         // setupAPI(self, ctx , API);
+        self.calcSize = function() {
+            dpx = getDevicePixelRatio()
+            var w = canvas.clientWidth;
+            var h = canvas.clientHeight;
+            canvas.width = w * dpx;
+            canvas.height = h * dpx;
+            ctx.scale(dpx, dpx);
+        }
+
+        self.calcSize();
 
         // API
         self.getWidth = function() {
