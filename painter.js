@@ -65,6 +65,10 @@
             return ctx;
         }
 
+        self.isCanvasSupport = function() {
+            return !!canvas.getContext;
+        }
+
         self.on = function(eventName, callback) {
             canvas.addEventListener(eventName, callback);
             return self;
