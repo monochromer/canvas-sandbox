@@ -69,6 +69,19 @@
             return !!canvas.getContext;
         }
 
+        self.saveToImage = function(fileName) {
+            // window.open(
+            //     canvas.toDataURL(),
+            //     'canvasImage',
+            //     'left=0,top=0,width=' + canvas.width + ',height=' + canvas.height + ',toolbar=0,resizable=0'
+            // );
+            var link = document.createElement('a');
+            link.href = canvas.toDataURL();
+            link.download = fileName;
+            link.click();
+            link.remove();
+        }
+
         self.on = function(eventName, callback) {
             canvas.addEventListener(eventName, callback);
             return self;
