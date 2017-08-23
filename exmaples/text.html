@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #canvas {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            width:  300px;
+            height: 300px;
+            box-shadow: 0 0 0 1px #ccc;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script src="../painter.js"></script>
+    <script>
+        const shadow = ctx => (shadowOffsetX = 0, shadowOffsetY = 0 , shadowBlur = 4, shadowColor = '#000') => {
+            Object.assign(ctx, {
+                shadowOffsetX,
+                shadowOffsetY,
+                shadowBlur,
+                shadowColor
+            });
+        }
+
+        var elem = document.getElementById('canvas');
+        var painter = Painter(elem);
+        var w = painter.getWidth();
+        var h = painter.getHeight();
+
+        var text = 'const shadow = ctx';
+        var font = {
+            size: '72px',
+            lineHeight: '1',
+            style: 'italic',
+            weight: 'normal',
+            family: '"Open Sans", sans-serif'
+        };
+        var pos = [0, 0];
+
+        painter
+            .fn((ctx) => {
+                shadow(ctx)(3, 5, 10, 'rgba(0, 0, 0, 0.5)');
+                ctx.fillStyle = '#f4f4f4';
+                ctx.fillRect(0, 0, w, h);
+
+                ctx.fillStyle = '#b2b2b2';
+                var grad = ctx.createLinearGradient(0, 0, ctx.measureText(text).width, 0);
+                grad.addColorStop(0, '#39f');
+                grad.addColorStop(1, '#c331cb');
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = grad;
+                ctx.font = `${font.style} ${font.weight} ${font.size} ${font.family}`;
+                // top | hanging | middle | alphabetic | ideographic | bottom;
+                ctx.textBaseline = 'top';
+                // center | start | end | left | right
+                ctx.textAlign = 'left';
+                ctx.fillText.call(ctx, text, ...pos);
+                ctx.strokeText.call(ctx, text, ...pos);
+            });
+    </script>
+</body>
+</html>
