@@ -8,6 +8,23 @@
             || 1;
     }
 
+    function loadImage(url, callback) {
+        return new Promise(function(resolve, reject) {
+            var img = new Image();
+            img.onload = function() {
+                img.onload = img.onerror = null;
+                callback(null, img);
+                resolve(img);
+            }
+            img.onerror = function(e) {
+                img.onload = img.onerror = null;
+                callback(e, null);
+                reject(e);
+            }
+            img.src  = url;
+        })
+    }
+
     // function setupAPI(self, canvasContext, API) {
     //     var hasOwn = Object.prototype.hasOwnProperty;
     //     var slice = Array.prototype.slice;
@@ -86,6 +103,11 @@
             link.click();
             link.remove();
         }
+
+        // self.loadImage = function(url) {
+        //     loadImage(url)
+        //         .then(function(image) {})
+        // }
 
         self.on = function(eventName, callback) {
             canvas.addEventListener(eventName, callback);
