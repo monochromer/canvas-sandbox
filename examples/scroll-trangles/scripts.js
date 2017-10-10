@@ -24,26 +24,42 @@ function getViewportH() {
     );
 }
 
+function getDocumentHeight() {
+    return Math.max(
+        document.body.scrollHeight, document.documentElement.scrollHeight,
+        document.body.offsetHeight, document.documentElement.offsetHeight,
+        document.body.clientHeight, document.documentElement.clientHeight
+    );
+};
+
+function getMaxScroll() {
+    return getDocumentHeight() - getViewportH();
+};
+
 var images = [
     {
         url: 'parallax-bg-1.png',
-        factor: 0.8,
-        image: null
+        factor: -0.8001,
+        image: null,
+        count: 1
     },
     {
         url: 'parallax-bg-2.png',
-        factor: 0.6,
-        image: null
+        factor: -0.6001,
+        image: null,
+        count: 1
     },
     {
         url: 'parallax-bg-3.png',
-        factor: 0.4,
-        image: null
+        factor: -0.4001,
+        image: null,
+        count: 1
     },
     {
         url: 'parallax-bg-4.png',
-        factor: 0.2,
-        image: null
+        factor: -0.2001,
+        image: null,
+        count: 1
     }
 ];
 
@@ -63,11 +79,11 @@ ctx.scale(dpx, dpx);
 
 function render() {
     ctx.clearRect(0, 0, w, h);
-    images.forEach(({ image, factor }) => {
-        let [nW, nH] = [image.naturalWidth, image.naturalHeight];
-        let [W, H] = [mult * nW, mult * nH];
-        let scrolled = -1 * getYScroll() * factor;
-        let count = Math.ceil((viewH - scrolled * H) / H);
+    images.forEach(({ image, factor, count }, idx) => {
+        let [ nW, nH ] = [ image.naturalWidth, image.naturalHeight ];
+        let [ W, H ] = [ mult * nW, mult * nH ];
+        let scroll = getYScroll();
+        let scrolled = ((scroll * factor) % H);
         for(let i = 0; i <= count; i = i + 1) {
             ctx.drawImage(
                 image, 0,  0, nW, nH,
@@ -79,17 +95,16 @@ function render() {
     });
 }
 
-function onScroll(e) {
-    render();
-}
-
 Promise
-    .all(images.map((imageItem) => {
+    .all(images.map(imageItem => {
         return loadImage(`${baseUrl}${imageItem.url}`)
-            .then(img => imageItem.image = img)
+            .then(img => {
+                imageItem.image = img;
+                imageItem.count = Math.ceil(viewH / (img.naturalHeight * mult));
+            })
         })
     )
     .then(() => {
-        decouple(window, 'scroll', onScroll);
+        decouple(window, 'scroll', render);
         render();
     });
