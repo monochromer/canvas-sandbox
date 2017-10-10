@@ -13,22 +13,47 @@ function loadImage(url) {
     });
 }
 
-var images = [];
+function getYScroll() {
+    return window.scrollY;
+}
 
-var baseUrl = '/img/';
+function getViewportH() {
+    return Math.max(
+        document.documentElement.clientHeight,
+        window.innerHeight || 0
+    );
+}
 
-var urls = [
-    'parallax-bg-1.png',
-    'parallax-bg-2.png',
-    'parallax-bg-3.png',
-    'parallax-bg-4.png'
+var images = [
+    {
+        url: 'parallax-bg-1.png',
+        factor: 0.8,
+        image: null
+    },
+    {
+        url: 'parallax-bg-2.png',
+        factor: 0.6,
+        image: null
+    },
+    {
+        url: 'parallax-bg-3.png',
+        factor: 0.4,
+        image: null
+    },
+    {
+        url: 'parallax-bg-4.png',
+        factor: 0.2,
+        image: null
+    }
 ];
 
-var factors = [0.2, 0.4, 0.6, 0.8];
+var baseUrl = 'img/';
+var mult = 0.5;
 
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 
+var viewH = getViewportH();
 var [w, h] = [canvas.offsetWidth, canvas.offsetHeight];
 var [hw, hh] = [0.5 * w, 0.5 * h];
 var dpx = devicePixelRatio || 1;
@@ -36,29 +61,21 @@ canvas.width = w * dpx;
 canvas.height = h * dpx;
 ctx.scale(dpx, dpx);
 
-urls.map(url => {
-    loadImage(baseUrl + url)
-        .then(img => {
-            images.push(img);
-            render();
-        });
-});
-
-function getYScroll() {
-    return window.scrollY;
-}
-
 function render() {
-    var mult = 0.5;
     ctx.clearRect(0, 0, w, h);
-    images.forEach((img, idx) => {
-        ctx.drawImage(
-            img,
-            0, 0,
-            img.naturalWidth, img.naturalHeight,
-            hw - 0.5 * mult * img.naturalWidth, -1 * getYScroll() * factors[idx],
-            mult * img.naturalWidth, mult * img.naturalHeight
-        );
+    images.forEach(({ image, factor }) => {
+        let [nW, nH] = [image.naturalWidth, image.naturalHeight];
+        let [W, H] = [mult * nW, mult * nH];
+        let scrolled = -1 * getYScroll() * factor;
+        let count = Math.ceil((viewH - scrolled * H) / H);
+        for(let i = 0; i <= count; i = i + 1) {
+            ctx.drawImage(
+                image, 0,  0, nW, nH,
+                hw - 0.5 * W,
+                scrolled + i * H,
+                W, H
+            );
+        };
     });
 }
 
@@ -66,4 +83,13 @@ function onScroll(e) {
     render();
 }
 
-decouple(window, 'scroll', onScroll);
+Promise
+    .all(images.map((imageItem) => {
+        return loadImage(`${baseUrl}${imageItem.url}`)
+            .then(img => imageItem.image = img)
+        })
+    )
+    .then(() => {
+        decouple(window, 'scroll', onScroll);
+        render();
+    });
