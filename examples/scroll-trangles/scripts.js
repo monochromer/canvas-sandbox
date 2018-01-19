@@ -79,9 +79,11 @@ ctx.scale(dpx, dpx);
 
 function render() {
     ctx.clearRect(0, 0, w, h);
-    images.forEach(({ image, factor, count }, idx) => {
-        let [ nW, nH ] = [ image.naturalWidth, image.naturalHeight ];
-        let [ W, H ] = [ mult * nW, mult * nH ];
+    images.forEach(({
+        image, factor, count,
+        nW, nH,
+        W, H
+    }) => {
         let scroll = getYScroll();
         let scrolled = ((scroll * factor) % H);
         for(let i = 0; i <= count; i = i + 1) {
@@ -100,6 +102,10 @@ Promise
         return loadImage(`${baseUrl}${imageItem.url}`)
             .then(img => {
                 imageItem.image = img;
+                imageItem.nW = img.naturalWidth;
+                imageItem.nH = img.naturalHeight;
+                imageItem.W = mult * img.naturalWidth;
+                imageItem.H = mult * img.naturalHeight;
                 imageItem.count = Math.ceil(viewH / (img.naturalHeight * mult));
             })
         })
