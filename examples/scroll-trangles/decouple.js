@@ -22,4 +22,16 @@ function decouple(node, event, fn) {
     node.addEventListener(event, captureEvent, false);
 
     return captureEvent;
+}
+
+function rafThrottle(action) {
+  let isRunning = false;
+  return function(...args) {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(() => {
+    action(...args);
+      isRunning = false;
+    });
   }
+}

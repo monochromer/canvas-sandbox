@@ -64,13 +64,13 @@ var images = [
 ];
 
 var baseUrl = 'img/';
-var mult = 0.5;
+var mult = 1 / window.devicePixelRatio;
 
-var canvas = document.getElementById('canvas');
+var canvasEL = document.getElementById('canvas');
+var [w, h] = [canvasEL.offsetWidth, canvasEL.offsetHeight];
+var canvas = ('OffscreenCanvas' in window) ? canvasEL.transferControlToOffscreen() : canvasEL;
 var ctx = canvas.getContext('2d');
-
 var viewH = getViewportH();
-var [w, h] = [canvas.offsetWidth, canvas.offsetHeight];
 var [hw, hh] = [0.5 * w, 0.5 * h];
 var dpx = devicePixelRatio || 1;
 canvas.width = w * dpx;
@@ -111,6 +111,9 @@ Promise
         })
     )
     .then(() => {
-        decouple(window, 'scroll', render);
+        // decouple(window, 'scroll', render);
+        window.addEventListener('scroll', rafThrottle(render), {
+            passive: true
+        })
         render();
     });

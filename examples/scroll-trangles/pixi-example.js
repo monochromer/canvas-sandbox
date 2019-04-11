@@ -83,7 +83,8 @@ function render() {
         W, H,
         tilingSprite
     }) => {
-        tilingSprite.tilePosition.x = (hw - 0.5 * W) * dpx;
+        // tilingSprite.tilePosition.x = (hw - 0.5 * W) * dpx;
+        // tilingSprite.tilePosition.x = 0.5;
         tilingSprite.tilePosition.y = (factor * getYScroll()) * dpx;
     });
 }
@@ -105,6 +106,7 @@ Promise
                 );
                 tilingSprite.anchor.x = 0.5;
                 tilingSprite.anchor.y = 0.0;
+                tilingSprite.position.x = (hw - 0.5 * imageItem.W) * dpx;
                 tilingSprite.interactive = false;
                 tilingSprite.buttonMode = false;
                 app.stage.addChild(tilingSprite);
@@ -113,6 +115,9 @@ Promise
         })
     )
     .then(() => {
-        decouple(window, 'scroll', render);
+        // decouple(window, 'scroll', render);
+        window.addEventListener('scroll', rafThrottle(render), {
+            passive: true
+        })
         render();
     });
